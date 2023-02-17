@@ -1,0 +1,19 @@
+{
+    "sku": "DJABC",
+    "store": {
+        "id": "10ddad1e-1260-413c-9c3a-7134e59ee79f"
+    },
+    "name": "VAPOR 15 ELITE FG",
+    "model": {
+        "id": "2cb3cfb3-6c25-458d-8150-10c95f8fd4e4"
+    },
+    "price": 432529965,
+    "values": [
+        {
+            "propertyValueId": "36b19578-8e37-44b7-93b3-2a74c53837dd",
+            "images": [
+                "urls"
+            ]
+        }
+    ]
+}

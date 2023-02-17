@@ -1,0 +1,69 @@
+{
+    "sku": "",
+    "name": "",
+    "modelId": "",
+    "price": 0,
+    "values": [
+        {
+            "colorPropertyValueId": "id của value màu Xanh",
+            "quantities": [
+                {
+                    "sizePropertyId": "id của value size",
+                    "quantity": "5",
+                    "storeId": "a"
+                }
+            ],
+            "images": [
+                "urls"
+            ]
+        }
+    ]
+}
+// color       sizes                                    images
+// hồng        size: 30 - quantity: 10 - store: a
+//             size: 30 - quantity: 10 - store: b
+//             size: 31 - quantity: 5 - store: a
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+export interface ISizeProp {
+    propertyValueId: string, //Size
+    propertyValue: string,
+    quantity: number,
+}
+
+export interface IPropList {
+    propertyValueId: string, //Color
+    propertyValue: string,
+    propertyName: string,
+    sizes: ISizeProp[],
+    images: string[]
+}
+
+export interface ProductModelFull {
+    sku: string,
+    name: string,
+    model: {
+        id: string,
+        name: string
+    },
+    store: {
+        id: string,
+        name: string
+    },
+    price: number,
+    values: IPropList[],
+    createdAt?: Date,
+    updatedAt?: Date,
+}
