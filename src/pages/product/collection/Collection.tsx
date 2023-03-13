@@ -69,9 +69,9 @@ const TableBrandProps = (showModalView: (record: CollectionModelFull) => void, s
       width: '20%',
       render: (record: CollectionModelFull) =>
         <>
-          <Viewbtn text="View" action={() => showModalView(record)} />
-          <Editbtn direction={`/${RouteName}/edit/${record.id}`} text="Edit" />
-          <Deletebtn text='Delete' action={() => showModalDelete(record)} />
+          <Viewbtn text="Xem" action={() => showModalView(record)} />
+          <Editbtn direction={`/${RouteName}/edit/${record.id}`} text="Sửa" />
+          <Deletebtn text='Xóa' action={() => showModalDelete(record)} />
         </>,
     },
   ]

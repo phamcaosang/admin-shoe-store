@@ -29,16 +29,16 @@ const TableBrandProps = (showModalView: (record: BrandModelFull) => void, showMo
       width: '20%',
       ...furtherSearchProp('name')
     },
-    {
-      title: 'Hình ảnh',
-      dataIndex: 'image',
-      width: '15%',
-      render: (image: string | undefined) => {
-        return image ? <img src={image} style={{
-          width: 50, height: 50, objectFit: 'cover'
-        }} alt="alt" /> : <></>
-      }
-    },
+    // {
+    //   title: 'Hình ảnh',
+    //   dataIndex: 'image',
+    //   width: '15%',
+    //   render: (image: string | undefined) => {
+    //     return image ? <img src={image} style={{
+    //       width: 50, height: 50, objectFit: 'cover'
+    //     }} alt="alt" /> : <></>
+    //   }
+    // },
     {
       title: 'Mô tả',
       dataIndex: 'description',
@@ -58,9 +58,9 @@ const TableBrandProps = (showModalView: (record: BrandModelFull) => void, showMo
       width: '20%',
       render: (record: BrandModelFull) =>
         <>
-          <Viewbtn text="View" action={() => showModalView(record)} />
-          <Editbtn direction={`/${RouteName}/edit/${record.id}`} text="Edit" />
-          <Deletebtn text='Delete' action={() => showModalDelete(record)} />
+          {/* <Viewbtn text="View" action={() => showModalView(record)} /> */}
+          <Editbtn direction={`/${RouteName}/edit/${record.id}`} text="Sửa" />
+          <Deletebtn text='Xóa' action={() => showModalDelete(record)} />
         </>,
     },
   ]

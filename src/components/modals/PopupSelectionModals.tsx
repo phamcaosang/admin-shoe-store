@@ -107,7 +107,7 @@ interface PopupSelectionDeleteItemType {
     onCancel: () => void,
     deleteItem: any,
     data: any,
-    field?: string
+    field?: string,
 }
 export const PopupSelectionDeleteItem = ({ itemType, open, onCancel, data, deleteItem, field }: PopupSelectionDeleteItemType) => {
     const handleDelete = () => {
@@ -124,10 +124,10 @@ export const PopupSelectionDeleteItem = ({ itemType, open, onCancel, data, delet
             cancelText="Cancel"
             width={500}
             okButtonProps={{
-                danger: true
+                danger: true,
             }}
         >
-            Bạn có chắc là xóa {itemType} {data && (`: ${data.name}` || "này")}
+            Bạn có chắc là xóa {itemType} {data && (`: ${field ? data[field] : (data.name || data.title)}`)}
         </Modal>
     </div >
 }

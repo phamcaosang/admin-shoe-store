@@ -2,34 +2,40 @@ import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Form, Input } from 'antd';
 import { useDispatch } from 'react-redux';
 import React, { useEffect, useState } from 'react';
-import { HandleLogin, verifyUserAuth } from '../redux/actions/authAction';
 import { Toaster } from 'react-hot-toast';
 import { useSelector } from 'react-redux';
 import { RootState } from "../redux/store"
 import { useNavigate } from 'react-router-dom';
+import { LoginForm, useLoginMutation } from '../redux/apiSlicers/Auth';
+import { notifyError, notifySuccess } from '../utils/alert';
 
-interface LoginType {
-    username: string,
-    password: string
-}
+
 
 const Login: React.FC = () => {
-    const dispatch = useDispatch()
     const navigate = useNavigate()
-    const [loading, setloading] = useState(false)
-    const onFinish = async (values: LoginType) => {
-        await HandleLogin(dispatch, values)
+    const { accessToken } = useSelector((state: RootState) => state.auth)
+    const [login, { isLoading, isSuccess }] = useLoginMutation()
+    const onFinish = (values: LoginForm) => {
+        login(values).unwrap().then((res: any) => {
+            console.log(res)
+            notifySuccess("Đăng nhập thành công")
+        }).catch(err => {
+            console.log(err)
+            notifyError("Đăng nhập thất bại")
+        })
     };
-    console.log(loading)
-
-    const auth = useSelector((state: RootState) => state.auth)
 
     useEffect(() => {
-        verifyUserAuth(dispatch)
-        if (auth.authenticated === true && auth.accessToken != null && auth.user != null) {
-            navigate(-1);
+        if (accessToken) {
+            navigate("/")
         }
-    }, [auth.authenticated, auth.accessToken, auth.user?.username])
+    }, [accessToken])
+    // useEffect(() => {
+    //     // verifyUserAuth(dispatch)
+    //     // if (auth.authenticated === true && auth.accessToken != null && auth.user != null) {
+    //     //     navigate(-1);
+    //     // }
+    // }, [auth.authenticated, auth.accessToken, auth.user?.username])
 
     return (
         <div style={{
@@ -65,12 +71,13 @@ const Login: React.FC = () => {
                 </Form.Item>
 
                 <Form.Item>
-                    <Button type="primary" htmlType="submit" className="login-form-button" disabled={loading}>
+                    <Button type="primary" htmlType="submit" className="login-form-button"
+                        loading={isLoading}
+                    >
                         Đăng nhập
                     </Button>
                 </Form.Item>
             </Form>
-            <div>username: admin   password: 123456</div>
             <Toaster />
         </div>
     );

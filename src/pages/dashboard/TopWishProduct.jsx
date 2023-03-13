@@ -1,58 +1,19 @@
 import { Table } from "antd"
+import { useGetProductsQuery } from "../../redux/apiSlicers/Product";
 
 
 export const TopWishProduct = () => {
-    const dataSource = [
-        {
-            key: '1',
-            sku: "AAB",
-            name: 'Mike',
-            model: "Adidas X",
-            votes: 40
-        },
-        {
-            key: '2',
-            sku: "MCD",
-            name: 'John',
-            model: "Adidas Y",
-            votes: 30
-        },
-        {
-            key: '3',
-            sku: "BBB",
-            name: 'John',
-            model: "Adidas Y",
-            votes: 30
-        },
-        {
-            key: '4',
-            sku: "CCC",
-            name: 'John',
-            model: "Adidas Y",
-            votes: 20
-        },
-        {
-            key: '5',
-            sku: "DDD",
-            name: 'John',
-            model: "Adidas Y",
-            votes: 20
-        },
-        {
-            key: '6',
-            sku: "EEE",
-            name: 'John',
-            model: "Adidas Y",
-            votes: 15
-        },
-        {
-            key: '7',
-            sku: "FFF",
-            name: 'John',
-            model: "Adidas Y",
-            votes: 16
-        },
-    ];
+    const { data: products, isLoading, isSuccess } = useGetProductsQuery(undefined, {
+        selectFromResult: ({ data, isLoading, isSuccess }) => ({
+            data: data?.map(({ sku, name, model, favorites }) => {
+                return {
+                    sku, name, favorites, model: model.name
+                }
+            }).sort((a, b) => b.favorites - a.favorites),
+            isLoading,
+            isSuccess
+        })
+    })
 
     const columns = [
         {
@@ -75,11 +36,11 @@ export const TopWishProduct = () => {
         },
         {
             title: 'Lượng yêu thích',
-            dataIndex: 'votes',
-            key: 'votes',
+            dataIndex: 'favorites',
+            key: 'favorites',
         },
     ];
     return <>
-        <Table dataSource={dataSource} columns={columns} pagination={{ pageSize: 4 }} />
+        <Table dataSource={products} columns={columns} pagination={{ pageSize: 4 }} />
     </>
 }

@@ -151,3 +151,11 @@
   padding-top: 21px !important;
   padding-bottom: 21px !important;
 }
+
+.selectStage .ant-select-selector {
+  padding: 0 !important;
+}
+
+.selectStage .ant-select-selection-item {
+  padding: 0 !important;
+}

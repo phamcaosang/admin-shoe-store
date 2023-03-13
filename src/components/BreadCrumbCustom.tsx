@@ -18,7 +18,11 @@ const handleSuit = (item: string) => {
         "contact": "Liên hệ",
         "create": "Tạo mới",
         "edit": "Chỉnh sửa",
-        "banner": "Banner"
+        "banner": "Banner",
+        "blog": "Tin tức",
+        "category": "Chủ đề",
+        "order": "Đơn hàng",
+        "info": "Thông tin"
 
     }
     return mapper[item] || item
@@ -26,7 +30,14 @@ const handleSuit = (item: string) => {
 
 export const BreadCrumbCustom = () => {
     const location = useLocation()
-    const pathSnippets = location.pathname.split("/").filter(i => i && i.length < 30 && i !== "dashboard").map(item => {
+    const pathSnippets = location.pathname.split("/").filter(i => i && i.length < 30 && i !== "dashboard").map((item, index) => {
+        console.log(index, item)
+        if (index === 2) {
+            return {
+                value: item,
+                url: null
+            }
+        }
         return {
             value: item,
             url: (item === "create" || item === "edit") ? null : item

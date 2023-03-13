@@ -1,66 +1,70 @@
 import { createSlice } from '@reduxjs/toolkit'
-import type { PayloadAction } from '@reduxjs/toolkit'
-
-interface UserProfile {
-    username: string,
-}
+import { clearStorage, saveToken } from '../../utils/storage'
+import { apiSlice } from '../apiSlicers'
+import { endpoints } from '../apiSlicers/Auth'
 
 interface AuthState {
-    authenticated: boolean,
     accessToken: null | string,
-    user: null | UserProfile,
-    loading: boolean,
-    errors: null | string[]
+    userId?: string,
+    email?: string,
+    avatar?: string
 }
 
 const initialState: AuthState = {
-    authenticated: false,
     accessToken: localStorage.getItem("token_shoe"),
-    user: null,
-    loading: false,
-    errors: null
 }
 
 export const authSlice = createSlice({
     name: "auth",
     initialState,
     reducers: {
-        loginStart: (state) => {
-            state.loading = true;
-        },
-        loginSuccess: (state, action: PayloadAction<AuthState>) => {
-            console.log(action.payload);
-
-            state.accessToken = action.payload.accessToken;
-            state.authenticated = true;
-            state.user = action.payload.user;
-        },
-        loginFail: (state, action: PayloadAction<AuthState>) => {
-            state.errors = action.payload.errors;
-        },
-        loginEnd: (state) => {
-            state.loading = false;
-            state.errors = null;
-        },
-        logout: (state) => {
-            state.accessToken = null;
-            state.authenticated = false;
-            state.user = null;
-        },
-        verifyUserSuccess: (state) => {
-            state.authenticated = true;
-            state.user = {
-                username: "admin"
-            }
-        },
-        verifyUserFailed: (state) => {
-            state.authenticated = false;
-            state.user = null;
-            state.accessToken = null;
+        logOut: (state) => {
+            state.accessToken = null
+            clearStorage()
         }
+    },
+    extraReducers: (builder) => {
+        builder.addMatcher(
+            endpoints.login.matchFulfilled,
+            (state, { payload }) => {
+                state.accessToken = payload.token
+                saveToken(payload.token)
+            }
+        ).addMatcher(
+            endpoints.verify.matchRejected,
+            (state, { payload }) => {
+                state.accessToken = null
+                clearStorage()
+            }
+        ).addMatcher(
+            endpoints.verify.matchFulfilled,
+            (state, { payload }) => {
+
+                if (!payload.roles.includes("Admin")) {
+                    state.accessToken = null
+                    clearStorage()
+                } else {
+                    state.email = payload.email
+                    state.avatar = payload.avatar
+                    state.userId = payload.id
+                }
+            }
+        ).addMatcher(
+            endpoints.editUser.matchFulfilled,
+            (state, { payload }) => {
+                if (!payload.roles.includes("Admin")) {
+                    state.accessToken = null
+                    clearStorage()
+                } else {
+                    state.email = payload.email
+                    state.avatar = payload.avatar
+                    state.userId = payload.id
+                }
+            }
+        )
     }
 })
 
-export const { loginStart, loginSuccess, loginFail, loginEnd, logout, verifyUserSuccess, verifyUserFailed } = authSlice.actions;
+export const { logOut } = authSlice.actions;
 
 export default authSlice.reducer;

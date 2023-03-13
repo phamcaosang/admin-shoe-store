@@ -8,7 +8,10 @@ const TypeTrans = "Sản phẩm"
 
 export interface ISizeProp {
     propertyValueId: string, //Size
+    propertyValue?: string,
     quantity: number,
+    discountPrice?: number,
+    isNew?: boolean
 }
 
 export interface IPropList {
@@ -74,6 +77,9 @@ const extendedApi = apiSlice.injectEndpoints({
                     ? [...result.map(({ id }) => ({ type: `${TypeName}` as const, id })), { type: `${TypeName}`, id: 'LIST' }]
                     : [{ type: `${TypeName}`, id: 'LIST' }],
         }),
+        getProductsNoGroup: builder.query<any, void>({
+            query: () => `${TypeAPI}/products-without-group`,
+        }),
         getProductBySku: builder.query<ProductModelForm, string>({
             query: (sku) => `${TypeAPI}/sku/${sku}`,
             providesTags: (result, error, id) => [{ type: `${TypeName}`, id }],
@@ -100,7 +106,7 @@ const extendedApi = apiSlice.injectEndpoints({
         }),
         updateProduct: builder.mutation<ProductModelFull, Partial<ProductModelFull>>({
             query: (item: ProductModelFull) => ({
-                url: `${TypeAPI}/update/${item.id}`,
+                url: `${TypeAPI}/update/${item.sku}`,
                 method: 'PUT',
                 body: item,
             }),
@@ -134,4 +140,5 @@ const extendedApi = apiSlice.injectEndpoints({
     overrideExisting: false,
 })
 
-export const { useGetProductsQuery, useGetProductBySkuQuery, useAddProductMutation, useUpdateProductMutation, useDeleteProductBySkuMutation } = extendedApi;
+export const { useGetProductsNoGroupQuery,
+    useGetProductsQuery, useGetProductBySkuQuery, useAddProductMutation, useUpdateProductMutation, useDeleteProductBySkuMutation } = extendedApi;

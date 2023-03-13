@@ -5,9 +5,9 @@ export const ErrorPage: React.FC = () => {
     return <Result
         status="404"
         title="404"
-        subTitle="Sorry, page not found."
+        subTitle="Không thể tìm thấy trang"
         extra={<Link to={"/"}>
-            <Button type="primary">Back Home</Button>
+            <Button type="primary">Về trang chính</Button>
         </Link>}
     />
 }

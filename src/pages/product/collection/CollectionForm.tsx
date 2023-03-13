@@ -72,7 +72,7 @@ const CollectionForm: React.FC<FormType> = ({ newForm }) => {
                 value={dataCollection?.name}
                 setState={setDataCollection}
             />
-            <ImageUploaderInput label="Hình ảnh" multipleAllow={false}
+            <ImageUploaderInput label="Hình ảnh - 400x218" multipleAllow={false}
                 value={dataCollection?.image}
                 setState={setDataCollection}
             />

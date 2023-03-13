@@ -10,8 +10,9 @@ export interface ContactModelFull {
     address: string,
     email: string,
     zalo: string,
-    facebook: string
-
+    facebook: string,
+    map: string,
+    image: string
 }
 
 export interface ContactModelForm {
@@ -19,7 +20,9 @@ export interface ContactModelForm {
     address: string,
     email: string,
     zalo: string,
-    facebook: string
+    facebook: string,
+    map: string,
+    image: string
 }
 
 const extendedApi = apiSlice.injectEndpoints({
@@ -43,7 +46,7 @@ const extendedApi = apiSlice.injectEndpoints({
                 notifyError(err.data.message)
             },
             transformResponse: (res: any) => {
-                notifySuccess(`$Liên hệ đã được cập nhập`)
+                notifySuccess(`Liên hệ đã được cập nhập`)
                 return res
             },
         }),

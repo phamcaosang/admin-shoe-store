@@ -5,7 +5,7 @@ import { RootState } from '../store'
 export const apiSlice = createApi({
     reducerPath: 'api/',
     baseQuery: fetchBaseQuery({
-        baseUrl: 'https://shoesstore.azurewebsites.net/api/',
+        baseUrl: process.env.REACT_APP_BE_URL,
         prepareHeaders: (headers, { getState }) => {
             const token = (getState() as RootState).auth.accessToken
             if (token) {
@@ -15,6 +15,7 @@ export const apiSlice = createApi({
             return headers
         },
     }),
-    tagTypes: ["Brand", "Type", "Store", "Model", "Property", "Product", "Collection", "Banner", "Contact"],
+    tagTypes: ["Brand", "Type", "Store", "Model", "Property", "Product",
+        "Collection", "Banner", "Contact", "Category", "Blog", "Order", "Info"],
     endpoints: () => ({}),
 })

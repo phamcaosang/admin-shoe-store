@@ -107,10 +107,12 @@ interface ImageUploader {
     name?: string,
     value?: string | string[],
     setState?: React.Dispatch<React.SetStateAction<any>>,
-    propertyValueId?: string
+    propertyValueId?: string,
+    labelColSpan?: number,
+    wrapperColSpan?: number
 }
 
-export const ImageUploaderInput: React.FC<ImageUploader> = ({ label, name = "image", multipleAllow = true, setState, value, propertyValueId }) => {
+export const ImageUploaderInput: React.FC<ImageUploader> = ({ label, name = "image", multipleAllow = false, setState, value, propertyValueId, labelColSpan, wrapperColSpan }) => {
     const [fileList, setFileList] = useState<UploadFile[]>([]);
 
     const setStateImage = (image: string | undefined) => {
@@ -244,7 +246,7 @@ export const ImageUploaderInput: React.FC<ImageUploader> = ({ label, name = "ima
                 //     open();
                 // }
                 return (
-                    <Form.Item label={label} valuePropName="fileList" colon={false} labelCol={{ span: 5 }} wrapperCol={{ span: 19 }}>
+                    <Form.Item label={label} valuePropName="fileList" colon={false} labelCol={{ span: labelColSpan || 5 }} wrapperCol={{ span: wrapperColSpan || 19 }}>
                         <Upload
                             listType="picture-card"
                             fileList={fileList}

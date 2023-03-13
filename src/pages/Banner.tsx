@@ -80,7 +80,7 @@ export const Banner: React.FC = () => {
 
     const columnTable: ColumnsType<BannerModelFull> = [
         {
-            title: 'Ảnh kích thước máy tính',
+            title: 'Ảnh kích thước máy tính - 1270x440',
             dataIndex: 'imageDesktop',
             width: '60%',
             render: (value: string) => {
@@ -95,7 +95,7 @@ export const Banner: React.FC = () => {
             }
         },
         {
-            title: 'Ảnh kích thước điện thoại',
+            title: 'Ảnh kích thước điện thoại - 440x440',
             dataIndex: 'imageMobile',
             width: '25%',
             render: (value: string) => {
@@ -117,7 +117,7 @@ export const Banner: React.FC = () => {
             width: '20%',
             render: (record: any) =>
                 <>
-                    <Tag color="blue" style={{ cursor: "pointer" }}>Sửa</Tag>
+                    {/* <Tag color="blue" style={{ cursor: "pointer" }}>Sửa</Tag> */}
                     <Tag color="red" style={{ cursor: "pointer" }} onClick={() => showModalDelete(record)}>Xóa</Tag>
                 </>,
         },
@@ -134,7 +134,10 @@ export const Banner: React.FC = () => {
                 itemType={"Banner"}
                 open={openDelete}
                 onCancel={hideModalDelete}
-                data={dataView}
+                data={{
+                    ...dataView,
+                    name: "đã chọn"
+                }}
             />
         }
     </div>

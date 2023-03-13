@@ -62,10 +62,10 @@ const BrandForm: React.FC<FormType> = ({ newForm }) => {
         value={dataBrand?.name}
         setState={setDataBrand}
       />
-      <ImageUploaderInput label="Hình ảnh" multipleAllow={false}
+      {/* <ImageUploaderInput label="Hình ảnh" multipleAllow={false}
         value={dataBrand?.image}
         setState={setDataBrand}
-      />
+      /> */}
       <TextAreaField
         label="Mô tả"
         name="description"

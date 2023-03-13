@@ -14,7 +14,8 @@ export interface InnerProp_ProductType {
 
 export interface PropertyValue {
     id?: string,
-    value: string | number
+    value: string | number,
+    isNew?: boolean
 }
 export interface PropertyModelFull {
     id: string,
@@ -97,9 +98,17 @@ const extendedApi = apiSlice.injectEndpoints({
             },
             invalidatesTags: (result, error, arg) => [{ type: `${TypeName}`, id: 'LIST' }],
 
+        }),
+        updatePropertyValue: builder.mutation<any, { propertyValueId: string, value: string }>({
+            query: (item: { propertyValueId: string, value: string }) => ({
+                url: `${TypeAPI}/propertyValue/update/${item.propertyValueId}`,
+                method: 'PUT',
+                body: item,
+            }),
+            invalidatesTags: [{ type: `${TypeName}`, id: 'LIST' }],
         })
     }),
     overrideExisting: false,
 })
 
-export const { useGetPropertysQuery, useGetPropertyByIdQuery, useAddPropertyMutation, useUpdatePropertyMutation, useDeletePropertyMutation } = extendedApi;
+export const { useGetPropertysQuery, useGetPropertyByIdQuery, useAddPropertyMutation, useUpdatePropertyMutation, useDeletePropertyMutation, useUpdatePropertyValueMutation } = extendedApi;

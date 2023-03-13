@@ -5,31 +5,25 @@ import { Outlet, useNavigate } from "react-router-dom"
 import { Toaster } from 'react-hot-toast';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
-import { verifyUserAuth } from '../../redux/actions/authAction';
-import { useDispatch } from 'react-redux';
+
 import Sidebar from './Side';
 import { BreadCrumbCustom } from '../BreadCrumbCustom';
+import { useVerifyQuery } from '../../redux/apiSlicers/Auth';
 
 const { Content, Footer } = Layout;
 
 
 const LayoutWrapper: React.FC = () => {
-
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const { accessToken } = useSelector((state: RootState) => state.auth)
+  const { isSuccess } = useVerifyQuery()
 
-  const { authenticated, accessToken, user } = useSelector((state: RootState) => state.auth)
 
   useEffect(() => {
-    verifyUserAuth(dispatch)
-
-    // if (authenticated === true && accessToken != null && user != null){
-    if (accessToken != null) {
-      // console.log("Authenicated");
-    } else {
+    if (!accessToken) {
       navigate("/login")
     }
-  }, [authenticated, accessToken, user?.username])
+  }, [accessToken, isSuccess])
 
   return (
     <Layout style={{ minHeight: '100vh' }}>

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react"
-import { Form, Input, Button, Select, Tooltip, Row, Col, Table, Modal, InputNumber } from "antd"
-import { dataType, TypeType } from "../../../utils/propsDummy/BrandProps";
+import { Form, Input, Button, Select, Tooltip, Row, Col, Table, Modal, InputNumber, Divider } from "antd"
+import { TypeType } from "../../../utils/propsDummy/BrandProps";
 import SizeBoxes from "./CheckBoxesForSize";
 import { useQuery } from "../../../utils/queryParams";
 import { useNavigate, useParams } from "react-router-dom";
 import { InputField, InputNumberField, SelectField, SubmitBtn } from "../../../components/formInputs/CoreFormFields";
 import { FormLayoutV1 } from "../../../components/formLayouts/FormLayoutV1";
-import { AddSpecPropComponent, DynamicAddFormSpecProp, ImageUploaderInput, InputSizeField } from "../../../components/formInputs/CustomFormFields";
+import { ImageUploaderInput, InputSizeField } from "../../../components/formInputs/CustomFormFields";
 import { PlusCircleOutlined } from '@ant-design/icons';
 import { PopupAddColorModal, PopupAddSizeModal } from "../../../components/modals/PopupAddModal";
 import { TypeModelFull, useGetTypesQuery } from "../../../redux/apiSlicers/ProductType";
@@ -16,7 +16,6 @@ import { ColumnsType } from "antd/lib/table";
 import { Deletebtn } from "../../../components/buttons/Deletebtn";
 import { Dispatch, SetStateAction } from "react";
 import { toast } from "react-hot-toast";
-import { Editbtn } from "../../../components/buttons/Editbtn";
 import { Viewbtn } from "../../../components/buttons/Viewbtn";
 interface AddColorComponentType {
     prodType: TypeType
@@ -76,7 +75,6 @@ interface IModalPropertyQuantity {
     setSizes: Dispatch<SetStateAction<PropertyValue[]>>,
     SizeInput: (propertyValueId: string) => JSX.Element
 }
-
 function ModalPropertyQuantity({ propertyValueId, listProp, setListProp, sizes, allSizes, setSizes, SizeInput }: IModalPropertyQuantity) {
     const [isModalOpenLevel1, setIsModalOpenLevel1] = useState(false);
     let item = listProp.find(i => i.propertyValueId === propertyValueId)
@@ -89,11 +87,13 @@ function ModalPropertyQuantity({ propertyValueId, listProp, setListProp, sizes, 
                 if (i.propertyValueId === propertyValueId) {
                     return {
                         ...i,
-                        sizes: sizes.map(({ id }) => {
+                        sizes: sizes.map(({ id, value, isNew }) => {
                             console.log(i.sizes)
                             return {
                                 propertyValueId: id as string,
-                                quantity: i.sizes.find(i => i.propertyValueId === id)?.quantity || 0
+                                propertyValue: value,
+                                quantity: i.sizes.find(i => i.propertyValueId === id)?.quantity || 0,
+                                isNew: isNew
                             }
                         }) as ISizeProp[],
                     }
@@ -126,7 +126,11 @@ function ModalPropertyQuantity({ propertyValueId, listProp, setListProp, sizes, 
         </div>
         <Modal title="Chọn kích thước - size" open={isModalOpenLevel1}
             onOk={() => handleSubmit()}
-            onCancel={() => setIsModalOpenLevel1(false)}>
+            onCancel={() => {
+                setSizes([])
+                setListProp(prev => prev)
+                setIsModalOpenLevel1(false)
+            }}>
             {SizeInput(propertyValueId)}
         </Modal>
     </>
@@ -145,7 +149,6 @@ export const ProductFormEdit: React.FC = () => {
     const { data, isSuccess: fetchProductSuccess } = useGetProductBySkuQuery(sku, {
         skip: !sku
     })
-    console.log(sku, data)
     const [updateProduct, { isLoading, isSuccess: updateSuccess }] = useUpdateProductMutation()
 
     const [productType, setProductType] = useState<TypeType | null>()
@@ -154,13 +157,15 @@ export const ProductFormEdit: React.FC = () => {
     const [sizes, setSizes] = useState<PropertyValue[]>([])
     const [dataProduct, setDataProduct] = useState<ProductModelForm>(initialFormValue());
     const [listProp, setListProp] = useState<IPropList[]>([])
+    console.log(sizes)
 
     function SizeInput(propertyValueId: String) {
+
         return <InputSizeField>
             {
                 getSizes ?
                     <SizeBoxes sizes={getSizes.values} setSizes={setSizes}
-                        orginalSize={sizes}
+                        editForm={true}
                         defaultValue={
                             listProp.find(i => i.propertyValueId === propertyValueId)?.sizes
                         }>
@@ -199,11 +204,14 @@ export const ProductFormEdit: React.FC = () => {
             width: "10%",
         },
         {
-            title: 'Kích thước - Số lượng',
+            title: <>
+                <p>Kích thước: Số lượng</p>
+                <p>Giá giảm: Giá cần giảm</p>
+            </>,
             dataIndex: 'sizes',
             key: 'sizes',
             render: (value: ISizeProp[], record: IPropList) => {
-                const handleChange = (value: number, propertyValueId: string) => {
+                const handleChangeQuanity = (val: number, propertyValueId: string, propertyValue: string | undefined) => {
                     setListProp(prev => {
                         return prev.map(i => {
                             if (i.propertyValueId === record.propertyValueId) {
@@ -211,7 +219,33 @@ export const ProductFormEdit: React.FC = () => {
                                     ...i,
                                     sizes: i["sizes"].map(i => {
                                         if (i.propertyValueId === propertyValueId) {
-                                            i.quantity = value
+                                            return {
+                                                ...i,
+                                                quantity: val,
+                                                propertyValue: propertyValue
+                                            }
+                                        }
+                                        return i
+                                    }) as ISizeProp[]
+                                }
+                            }
+                            return i
+                        })
+                    })
+                }
+                const handleChangePrice = (val: number, propertyValueId: string, propertyValue: string | undefined) => {
+                    setListProp(prev => {
+                        return prev.map(i => {
+                            if (i.propertyValueId === record.propertyValueId) {
+                                return {
+                                    ...i,
+                                    sizes: i["sizes"].map(i => {
+                                        if (i.propertyValueId === propertyValueId) {
+                                            return {
+                                                ...i,
+                                                discountPrice: val,
+                                                propertyValue: propertyValue
+                                            }
                                         }
                                         return i
                                     }) as ISizeProp[]
@@ -222,17 +256,33 @@ export const ProductFormEdit: React.FC = () => {
                     })
                 }
 
+
                 return <>
                     <div>
                         {Array.isArray(value) && <Row gutter={24}>{value.map((item, i) => {
-                            return <Col span={6} key={i}>
-                                <Form.Item labelCol={{ span: 8 }} wrapperCol={{ span: 16 }}
-                                    label={getSizes?.values.find(i => i.id === item.propertyValueId)?.value}
-                                >
-                                    <InputNumber min={0} value={item.quantity}
-                                        onChange={val => handleChange(val as number, item.propertyValueId)}
-                                    />
-                                </Form.Item></Col>
+                            return (
+                                <Col span={8} key={i}>
+                                    <Form.Item labelCol={{ span: 10 }} wrapperCol={{ span: 14 }}
+                                        style={{ marginBottom: 7 }}
+                                        label={getSizes?.values.find(i => i.id === item.propertyValueId)?.value}
+                                    >
+                                        <InputNumber min={0} value={item.quantity}
+                                            onChange={val => handleChangeQuanity(val as number, item.propertyValueId, item.propertyValue)}
+                                        />
+                                    </Form.Item>
+                                    <Form.Item label="Giá giảm" labelCol={{ span: 10 }} wrapperCol={{ span: 14 }}>
+                                        <InputNumber min={0}
+                                            max={100000000}
+                                            value={item.discountPrice ? item.discountPrice : 0}
+                                            style={{ width: "100%" }}
+                                            onChange={val => handleChangePrice(val as number, item.propertyValueId, item.propertyValue)}
+                                            formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                        // parser={(value) => value!.replace(/\$\s?|(,*)/g, '')}
+                                        />
+                                    </Form.Item>
+                                    <Divider />
+                                </Col>
+                            )
                         })}</Row>}
                     </div>
                     <ModalPropertyQuantity
@@ -246,20 +296,22 @@ export const ProductFormEdit: React.FC = () => {
                     />
                 </>
             },
-            width: "40%",
+            width: "45%",
 
         },
         {
-            title: 'Hình ảnh',
+            title: 'Hình ảnh - 900x900',
             dataIndex: 'images',
             key: 'images',
             render: (value: string[], record: IPropList) => {
                 if (record.propertyValueId) {
-                    return <ImageUploaderInput multipleAllow={true} setState={setListProp} name="images" propertyValueId={record.propertyValueId} value={record.images} />
+                    return <ImageUploaderInput
+                        labelColSpan={0} wrapperColSpan={24}
+                        multipleAllow={true} setState={setListProp} name="images" propertyValueId={record.propertyValueId} value={record.images} />
                 }
                 return <></>
             },
-            width: "40%",
+            width: "35%",
         },
         {
             title: 'Hành động',
@@ -299,6 +351,7 @@ export const ProductFormEdit: React.FC = () => {
             setListProp(data.values)
         }
     }, [fetchProductSuccess])
+    console.log(listProp)
 
     useEffect(() => {
         if (updateSuccess) {

@@ -123,7 +123,7 @@ const SizeTags: React.FC<ISizeProps> = ({ tags, setTags }: ISizeProps) => {
       )}
       {!inputVisible && (
         <Tag className="site-tag-plus" onClick={showInput}>
-          <PlusOutlined /> New Size
+          <PlusOutlined /> Thêm
         </Tag>
       )}
     </>

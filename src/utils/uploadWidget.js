@@ -12,13 +12,13 @@ const UploadWidget = ({ children, onUpload, multipleAllow }) => {
     function createWidget() {
 
         const options = {
-            cloudName: "blog-music-usage",
-            uploadPreset: 'test_sample',
+            cloudName: process.env.REACT_APP_CLOUD_NAME,
+            uploadPreset: process.env.REACT_APP_UPLOAD_PRESET,
             // cropping: true, //add a cropping step
             // showAdvancedOptions: true,  //add advanced options (public_id and tag)
             // sources: [ "local", "url"], // restrict the upload sources to URL and local files
             multiple: multipleAllow,  //restrict upload to a single file
-            folder: "test", //upload files to the specified folder
+            folder: process.env.REACT_APP_FOLDER, //upload files to the specified folder
             // tags: ["users", "profile"], //add the given tags to the uploaded files
             // context: {alt: "user_uploaded"}, //add the given context data to the uploaded files
             clientAllowedFormats: ["jpg", "jpeg", "png", "webp"], //restrict uploading to image files only

@@ -5,6 +5,7 @@ const { Header } = Layout;
 
 const Head: React.FC = () => {
 
+
     const items: MenuProps['items'] = [
         {
             label: 'Vietnames',
@@ -24,7 +25,7 @@ const Head: React.FC = () => {
     return <div>
         <Header className="site-layout-background" style={{ padding: "0 40px", color: "white", display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
             <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", margin: "18px" }}>
-                <Avatar src="https://joeschmoe.io/api/v1/random"
+                <Avatar src={"https://joeschmoe.io/api/v1/random"}
                     style={{ border: "1px solid white", cursor: "pointer", marginRight: "8px" }}
                 />
                 <Dropdown menu={menuProps}>

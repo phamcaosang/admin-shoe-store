@@ -1,44 +1,17 @@
 import { Bar } from '@ant-design/plots';
+import { useGetProductsQuery } from '../../redux/apiSlicers/Product';
 
 
 export const BarViewProduct = () => {
-    const data = [
-        {
-            type: 'AAAAAA',
-            views: 38,
-        },
-        {
-            type: 'BBBBB',
-            views: 52,
-        },
-        {
-            type: 'CCCCCC',
-            views: 61,
-        },
-        {
-            type: 'DDDDDD',
-            views: 145,
-        },
-        {
-
-            type: 'EEEEEE',
-            views: 48,
-        },
-        {
-            type: 'FFFFFF',
-            views: 38,
-        },
-        {
-            type: 'GGGGGG',
-            views: 38,
-        },
-        {
-            type: 'HHHHHH',
-            views: 38,
-        }
-    ]
+    const { data: products, isLoading, isSuccess } = useGetProductsQuery(undefined, {
+        selectFromResult: ({ data, isLoading, isSuccess }) => ({
+            data: data?.map(({ view, name }) => { return { views: view, type: name } })?.sort((a, b) => b.views - a.views)?.slice(0, 8),
+            isLoading,
+            isSuccess
+        })
+    })
     const config = {
-        data,
+        data: isSuccess ? products : [],
         xField: 'views',
         yField: 'type',
         barWidthRatio: 0.8,
@@ -54,6 +27,6 @@ export const BarViewProduct = () => {
     };
 
     return <>
-        <Bar {...config} />
+        <Bar {...config} loading={isLoading} />
     </>
 }

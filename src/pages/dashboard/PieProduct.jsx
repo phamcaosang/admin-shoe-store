@@ -1,39 +1,33 @@
 import ReactDOM from 'react-dom';
 import { Pie } from '@ant-design/plots';
 import React, { useState, useEffect } from 'react';
+import { useGetProductsQuery } from '../../redux/apiSlicers/Product';
 
 
 export const PieProduct = () => {
-    const data = [
-        {
-            type: 'AAAAAAA',
-            value: 27,
-        },
-        {
-            type: 'BBBBBBB',
-            value: 25,
-        },
-        {
-            type: 'CCCCCc',
-            value: 18,
-        },
-        {
-            type: 'DDDDDDDD',
-            value: 15,
-        },
-        {
-            type: 'EEEEEE',
-            value: 10,
-        },
-        {
-            type: 'FFFFFF',
-            value: 5,
-        },
-    ];
+    const { data: productType, isLoading } = useGetProductsQuery(undefined, {
+        selectFromResult: ({ data, isLoading }) => ({
+            data: data?.map(i => {
+                return {
+                    sku: i.sku,
+                    productType: i.model.productType.name
+                }
+            })?.reduce((p, c) => {
+                var name = c.productType;
+                if (!p.hasOwnProperty(name)) {
+                    p[name] = 0;
+                }
+                p[name]++;
+                return p;
+            }, {}),
+            isLoading
+        })
+    })
+
     const config = {
         legend: false,
         appendPadding: 40,
-        data,
+        data: !productType ? [] : Object.entries(productType).map(i => { return { value: i[1], type: i[0] } }),
         angleField: 'value',
         colorField: 'type',
         radius: 1,
@@ -68,6 +62,6 @@ export const PieProduct = () => {
         },
     };
     return <>
-        <Pie {...config} />
+        <Pie {...config} loading={isLoading} />
     </>
 }

@@ -63,7 +63,7 @@ const TypeForm: React.FC<FormType> = ({ newForm }) => {
                 value={dataType?.name}
                 setState={setDataType}
             />
-            <ImageUploaderInput label="Hình ảnh" multipleAllow={false}
+            <ImageUploaderInput label="Hình ảnh - 2:3" multipleAllow={false}
                 value={dataType?.image}
                 setState={setDataType}
             />

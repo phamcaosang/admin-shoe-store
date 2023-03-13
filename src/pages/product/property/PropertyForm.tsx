@@ -85,7 +85,7 @@ const PropertyForm: React.FC<FormType> = ({ newForm }) => {
         styleWrapper={{
             maxWidth: "1000px"
         }}
-        title={newForm ? (!specForm ? "Create New Core Property" : "Create New Specification Property") : (!specForm ? "Edit Core Property" : "Edit Specification Property")}>
+        title={newForm ? (!specForm ? "Thêm thuộc tính mới" : "Create New Specification Property") : (!specForm ? "Sửa thuộc tính" : "Edit Specification Property")}>
         <Form
             labelCol={{ span: 3 }}
             labelWrap

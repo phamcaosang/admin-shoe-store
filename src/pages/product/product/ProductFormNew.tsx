@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { Form, Input, Button, Select, Tooltip, Row, Col, Table, Modal, InputNumber } from "antd"
+import { Form, Input, Button, Select, Tooltip, Row, Col, Table, Modal, InputNumber, Divider } from "antd"
 import { dataType, TypeType } from "../../../utils/propsDummy/BrandProps";
 import SizeBoxes from "./CheckBoxesForSize";
 import { useQuery } from "../../../utils/queryParams";
@@ -93,7 +93,8 @@ function ModalPropertyQuantity({ propertyValueId, listProp, setListProp, sizes, 
                             console.log(i.sizes)
                             return {
                                 propertyValueId: id as string,
-                                quantity: i.sizes.find(i => i.propertyValueId === id)?.quantity || 0
+                                quantity: i.sizes.find(i => i.propertyValueId === id)?.quantity || 0,
+                                price: 0
                             }
                         }) as ISizeProp[],
                     }
@@ -152,7 +153,7 @@ export const ProductFormNew: React.FC = () => {
             {
                 getSizes ?
                     <SizeBoxes sizes={getSizes.values} setSizes={setSizes}
-                        orginalSize={sizes}
+                        editForm={false}
                         defaultValue={
                             listProp.find(i => i.propertyValueId === propertyValueId)?.sizes
                         }>
@@ -207,11 +208,14 @@ export const ProductFormNew: React.FC = () => {
             width: "10%",
         },
         {
-            title: 'Kích thước - Số lượng',
+            title: <>
+                <p>Kích thước: Số lượng</p>
+                <p>Giá giảm: Giá cần giảm</p>
+            </>,
             dataIndex: 'sizes',
             key: 'sizes',
             render: (value: ISizeProp[], record: IPropList) => {
-                const handleChange = (value: number, propertyValueId: string) => {
+                const handleChangeQuantity = (value: number, propertyValueId: string) => {
                     setListProp(prev => {
                         return prev.map(i => {
                             if (i.propertyValueId === record.propertyValueId) {
@@ -229,18 +233,50 @@ export const ProductFormNew: React.FC = () => {
                         })
                     })
                 }
+                const handleChangePrice = (value: number, propertyValueId: string) => {
+                    setListProp(prev => {
+                        return prev.map(i => {
+                            if (i.propertyValueId === record.propertyValueId) {
+                                return {
+                                    ...i,
+                                    sizes: i["sizes"].map(i => {
+                                        if (i.propertyValueId === propertyValueId) {
+                                            i.discountPrice = value
+                                        }
+                                        return i
+                                    }) as ISizeProp[]
+                                }
+                            }
+                            return i
+                        })
+                    })
+                }
 
                 return <>
                     <div>
                         {Array.isArray(value) && <Row gutter={24}>{value.map((item, i) => {
-                            return <Col span={6} key={i}>
-                                <Form.Item labelCol={{ span: 8 }} wrapperCol={{ span: 16 }}
+                            return <Col span={8} key={i}>
+                                <Form.Item labelCol={{ span: 10 }} wrapperCol={{ span: 14 }}
+                                    style={{ marginBottom: 7 }}
                                     label={getSizes?.values.find(i => i.id === item.propertyValueId)?.value}
                                 >
-                                    <InputNumber min={0} value={item.quantity}
-                                        onChange={val => handleChange(val as number, item.propertyValueId)}
+                                    <InputNumber min={0} value={item.quantity} style={{ width: "100%" }}
+                                        onChange={val => handleChangeQuantity(val as number, item.propertyValueId)}
                                     />
-                                </Form.Item></Col>
+
+                                </Form.Item>
+                                <Form.Item label="Giá giảm" labelCol={{ span: 10 }} wrapperCol={{ span: 14 }}>
+                                    <InputNumber min={0}
+                                        max={100000000}
+                                        value={item.discountPrice ? item.discountPrice : 0}
+                                        style={{ width: "100%" }}
+                                        onChange={val => handleChangePrice(val as number, item.propertyValueId)}
+                                        formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                    // parser={(value) => value!.replace(/\$\s?|(,*)/g, '')}
+                                    />
+                                </Form.Item>
+                                <Divider />
+                            </Col>
                         })}</Row>}
                     </div>
                     <ModalPropertyQuantity
@@ -254,20 +290,22 @@ export const ProductFormNew: React.FC = () => {
                     />
                 </>
             },
-            width: "40%",
+            width: "45%",
 
         },
         {
-            title: 'Hình ảnh',
+            title: 'Hình ảnh - 900x900',
             dataIndex: 'images',
             key: 'images',
             render: (value: string[], record: IPropList) => {
                 if (record.propertyValueId) {
-                    return <ImageUploaderInput multipleAllow={true} setState={setListProp} name="images" propertyValueId={record.propertyValueId} />
+                    return <ImageUploaderInput
+                        labelColSpan={0} wrapperColSpan={24}
+                        multipleAllow={true} setState={setListProp} name="images" propertyValueId={record.propertyValueId} />
                 }
                 return <></>
             },
-            width: "40%",
+            width: "35%",
         },
         {
             title: 'Hành động',

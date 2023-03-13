@@ -13,5 +13,6 @@ export const keyLink: { [key: string]: string } = {
   '9': '/blog',
   '10': '/banner',
   '11': '/contact',
-  '12': '/about'
+  '12': '/about',
+  '13': "/category"
 }

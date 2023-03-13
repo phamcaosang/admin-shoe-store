@@ -1,18 +1,22 @@
-import React, { useState } from 'react'
-import { Modal, Button, Drawer, Space, Form, Input, Upload, Select } from 'antd'
-import { PlusOutlined } from '@ant-design/icons';
-import { HandleLogout } from '../../redux/actions/authAction'
+import React, { useEffect, useState } from 'react'
+import { Modal, Button, Drawer, Space, Form, Input, Upload, Select, message } from 'antd'
 import { useDispatch } from 'react-redux'
 import { TitleComponent } from '../Title';
 import { ImageUploaderInput } from '../formInputs/CustomFormFields';
+import { useEditUserMutation, useRegisterAdminMutation } from '../../redux/apiSlicers/Auth';
+import { logOut } from '../../redux/slices/authSlicer';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../redux/store';
 
 interface UserSettingType {
   open: boolean,
-
   onCancel: ((e: React.MouseEvent<Element, MouseEvent> | React.KeyboardEvent<Element>) => void)
 }
 
 function UserSetting({ open, onCancel }: UserSettingType) {
+  const [image, setImage] = useState<{ avatar: string }>()
+  const [editUser] = useEditUserMutation()
+  const { userId, avatar } = useSelector((state: RootState) => state.auth)
   const [childrenDrawer, setChildrenDrawer] = useState(false);
   const dispatch = useDispatch()
   const [form] = Form.useForm()
@@ -25,9 +29,22 @@ function UserSetting({ open, onCancel }: UserSettingType) {
   };
 
   const handleForm = (values: any) => {
-    console.log({ ...values, avatar: image?.avatar });
+    console.log({ ...values, avatar: image?.avatar, id: userId })
+    editUser({ ...values, avatar: image?.avatar, id: userId }).unwrap().then(res => {
+      message.success("Cập nhật thành công")
+
+    }).catch(err => {
+      console.log(err)
+      message.error("Cập nhật thất bại")
+    })
   }
-  const [image, setImage] = useState<{ avatar: string }>()
+  useEffect(() => {
+    avatar && setImage({ avatar })
+  }, [avatar])
+
+  useEffect(() => {
+    form.setFieldValue("email", "admin@email.com")
+  }, [])
   return (
     <div>
       <Drawer
@@ -39,13 +56,10 @@ function UserSetting({ open, onCancel }: UserSettingType) {
 
         extra={
           <Space size={5} >
-            {/* <Button key="dashed" onClick={onCancel} style={{ fontSize: 10 }}>
-              <GrClose />
-            </Button> */}
             <Button type="dashed" onClick={showChildrenDrawer}>
               Thêm admin
             </Button>
-            <Button key="logout" danger onClick={() => { HandleLogout(dispatch) }}>
+            <Button key="logout" danger onClick={() => dispatch(logOut())}>
               Đăng xuất
             </Button>
             <Button key="save" type='primary' onClick={() => form.submit()}>
@@ -65,32 +79,7 @@ function UserSetting({ open, onCancel }: UserSettingType) {
           <Form.Item label="Email" colon={false} name="email">
             <Input disabled />
           </Form.Item>
-          {/* <Form.Item label="Số điện thoại" colon={false}>
-            <Input />
-          </Form.Item> */}
-          <Form.Item label="Mật khẩu" colon={false} name="password">
-            <Input.Password />
-          </Form.Item>
-          {/* <Form.Item label="Avatar" valuePropName="fileList" colon={false} >
-            <Upload listType="picture-card" maxCount={1} onChange={(info: UploadChangeParam<UploadFile<any>>) => console.log(info)}>
-              <div>
-                <PlusOutlined />
-                <div style={{ marginTop: 8 }}>Upload</div>
-              </div>
-            </Upload>
-          </Form.Item> */}
-          <ImageUploaderInput label="Hình đại diện" multipleAllow={false} setState={setImage} name="avatar" />
-          {/* <Form.Item
-            name="gender"
-            label="Gender"
-            colon={false}
-          >
-            <Select placeholder="select your gender">
-              <Select.Option value="male">Male</Select.Option>
-              <Select.Option value="female">Female</Select.Option>
-            </Select>
-          </Form.Item> */}
-
+          <ImageUploaderInput label="Hình đại diện" multipleAllow={false} setState={setImage} name="avatar" value={image?.avatar} />
           <div style={{ width: "100%", height: 50 }}>
 
           </div>
@@ -117,41 +106,61 @@ function UserSetting({ open, onCancel }: UserSettingType) {
           </Form.Item> */}
         </Form>
 
-        <Drawer
-          title="Đăng ký tài khoản admin"
-          width={350}
-          onClose={onChildrenDrawerClose}
-          open={childrenDrawer}
-        >
-          <Form
-            labelCol={{ span: 6 }}
-            wrapperCol={{ span: 18 }}
-            style={{ marginTop: 20 }}
-            labelWrap={true}
-            layout="horizontal">
-            <Form.Item label="Email" colon={false}
-              rules={[{ required: true }]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item label="Số điện thoại" colon={false}>
-              <Input />
-            </Form.Item>
-            <Form.Item label="Mật khẩu"
-              colon={false}
-              rules={[{ required: true }]}
-            >
-              <Input.Password />
-            </Form.Item>
-            <div style={{ textAlign: "center" }}>
-              <Button type='primary'>Lưu</Button>
-            </div>
-          </Form>
-        </Drawer>
+        <AddAdmin onChildrenDrawerClose={onChildrenDrawerClose} childrenDrawer={childrenDrawer} />
 
       </Drawer>
     </div >
   )
+}
+
+const AddAdmin: React.FC<{
+  onChildrenDrawerClose: () => void, childrenDrawer: boolean
+}> = ({ onChildrenDrawerClose, childrenDrawer }) => {
+
+  const [form] = Form.useForm()
+  const [registerAdmin, { isLoading }] = useRegisterAdminMutation()
+  const handleSubmit = (values: any) => {
+    console.log(values)
+    registerAdmin(values).unwrap().then(res => {
+      form.resetFields()
+      onChildrenDrawerClose()
+      message.success("Đăng ký admin thành công")
+    }).catch(err => {
+      console.log(err)
+      message.error("Đăng ký thất bại")
+    })
+  }
+  return <Drawer
+    title="Đăng ký tài khoản admin"
+    width={350}
+    onClose={onChildrenDrawerClose}
+    open={childrenDrawer}
+  >
+    <Form
+      form={form}
+      labelCol={{ span: 7 }}
+      wrapperCol={{ span: 17 }}
+      style={{ marginTop: 20 }}
+      onFinish={handleSubmit}
+      labelWrap={true}
+      layout="horizontal">
+      <Form.Item label="Email" colon={false} name="email"
+        rules={[{ required: true }]}
+      >
+        <Input />
+      </Form.Item>
+      <Form.Item label="Mật khẩu"
+        colon={false}
+        name="password"
+        rules={[{ required: true }]}
+      >
+        <Input.Password />
+      </Form.Item>
+      <div style={{ textAlign: "center" }}>
+        <Button type='primary' htmlType='submit'>Lưu</Button>
+      </div>
+    </Form>
+  </Drawer>
 }
 
 export default UserSetting

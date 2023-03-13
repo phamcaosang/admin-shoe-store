@@ -29,7 +29,6 @@ const Product: React.FC = () => {
   }
 
   const { data: productData, isLoading } = useGetProductsQuery()
-  console.log(productData)
 
   const showModal = (record: ProductModelFull) => {
     setDataView(record)
@@ -105,8 +104,8 @@ const Product: React.FC = () => {
           {/* <Tag
             onClick={() => showModal(record)}
             color='blue' style={{ width: "50px", textAlign: "center", cursor: "pointer", marginBottom: 5, marginRight: 0 }}>View</Tag> */}
-          <Link to={`/product/edit/${record.sku}/?type=${record.model?.productType?.id}`}><Tag color='blue' style={{ width: "50px", textAlign: "center", cursor: "pointer", margin: "0 15px 0 15px" }}>Edit</Tag></Link>
-          <Deletebtn text='Delete' action={() => showModalDelete(record)} />
+          <Link to={`/product/edit/${record.sku}/?type=${record.model?.productType?.id}`}><Tag color='blue' style={{ width: "50px", textAlign: "center", cursor: "pointer", margin: "0 15px 0 15px" }}>Sửa</Tag></Link>
+          <Deletebtn text='Xóa' action={() => showModalDelete(record)} />
           {/* <Tag color='blue' style={{ width: "50px", textAlign: "center", cursor: "pointer", marginBottom: 5 }}>Clone</Tag> */}
         </>,
     },
@@ -121,15 +120,8 @@ const Product: React.FC = () => {
       >Tạo Sản Phẩm</Button>
 
     </div>
-    <PopupSelectionModal title="Select Product Type" open={select} onCancel={() => setSelect(false)} />
+    <PopupSelectionModal title="Chọn loại sản phẩm" open={select} onCancel={() => setSelect(false)} />
     <Table
-      onRow={(record, rowIndex) => {
-        return {
-          onDoubleClick: () => {
-            showModal(record)
-          }
-        }
-      }}
       loading={isLoading}
       columns={columns} dataSource={productData}
       rowKey={row => row.id}

@@ -8,48 +8,86 @@ import {
 import { AiOutlineShoppingCart } from "react-icons/ai";
 import { MdWeb } from "react-icons/md"
 import React, { useState } from "react"
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { keyLink } from './LinkNav';
 import UserSetting from "../modals/UserSettingDrawer";
+import { RootState } from "../../redux/store";
+import { useSelector } from "react-redux";
 const { Sider } = Layout;
 
-
-function getItem(
-  label: React.ReactNode,
-  key: React.Key,
-  icon?: React.ReactNode,
-  children?: MenuItem[],
-): MenuItem {
-  return {
-    key,
-    icon,
-    children,
-    label
-  } as MenuItem;
-}
 
 type MenuItem = Required<MenuProps>['items'][number];
 
 export const items: MenuItem[] = [
-  getItem('Trang chủ', '1', <PieChartOutlined />),
-  // getItem('Người dùng', '2', <UserOutlined />),
-  getItem('Sản phẩm', 'sub1', <InboxOutlined />, [
-    getItem('Bộ sưu tập', '3'),
-    getItem('Thương hiệu', '4'),
-    getItem('Phân loại', '5'),
-    getItem('Kiểu mẫu', '5.5'),
-    getItem('Sản phẩm', '6'),
-    getItem('Thuộc tính', '6.1'),
-    // getItem('Store', '6.5'),
-    // getItem('Giảm giá', '7'),
-  ]),
-  // getItem('Order', '8', <AiOutlineShoppingCart />),
-  // getItem('Blog', '9', <EditOutlined />),
-  getItem('Trang', 'sub2', <MdWeb />, [
-    getItem('Banner', 10),
-    getItem('Liên hệ', 11),
-    // getItem('Contact', 12)
-  ]),
+  {
+    key: "Home",
+    icon: <PieChartOutlined />,
+    label: <Link to="/dashboard">Trang chủ</Link>
+  },
+  {
+    key: "Sản phẩm",
+    label: "Sản phẩm",
+    icon: <InboxOutlined />,
+    children: [
+      {
+        key: "Bộ sưu tập",
+        label: <Link to="/collection">Bộ sưu tập</Link>
+      },
+      {
+        key: "Thương hiệu",
+        label: <Link to="/brand">Thương hiệu</Link>
+      },
+      {
+        key: "Phân loại",
+        label: <Link to="/type">Phân loại</Link>
+      },
+      {
+        key: "Kiểu mẫu",
+        label: <Link to="/model">Kiểu mẫu</Link>
+      },
+      {
+        key: "Sản phẩm",
+        label: <Link to="/product">Sản phẩm</Link>
+      },
+      {
+        key: "Thuộc tính",
+        label: <Link to="/property">Thuộc tính</Link>
+      },
+    ]
+  },
+  {
+    key: "Order",
+    icon: <AiOutlineShoppingCart />,
+    label: <Link to="/order">Đơn hàng</Link>
+  },
+
+  {
+    key: "Trang",
+    icon: <MdWeb />,
+    label: "Trang",
+    children: [
+      {
+        key: "Banner",
+        label: <Link to="/banner">Banner</Link>
+      },
+      {
+        key: "Thông tin",
+        label: <Link to="/info">Thông tin</Link>
+      },
+      {
+        key: "Liên hệ",
+        label: <Link to="/contact">Liên hệ</Link>
+      },
+      {
+        key: "Tin tức",
+        label: <Link to="/blog">Tin tức</Link>
+      },
+      {
+        key: "Chủ đề",
+        label: <Link to="/category">Chủ đề</Link>
+      },
+    ]
+  },
 ];
 
 
@@ -70,6 +108,9 @@ const Sidebar: React.FC = () => {
     return matchedKeys ? [matchedKeys[0]] : ["0"]
   }
 
+  const { avatar } = useSelector((state: RootState) => state.auth)
+
+
   return <Sider
     collapsible
     collapsed={collapsed}
@@ -81,7 +122,7 @@ const Sidebar: React.FC = () => {
       style={{ display: "flex", justifyContent: "center", margin: "15px 0" }}
     >
 
-      <Avatar src="https://api.multiavatar.com/Ki.png"
+      <Avatar src={avatar || "https://api.multiavatar.com/Ki.png"}
         style={{ border: "2px solid white", cursor: "pointer", width: 50, height: 50 }}
         onClick={(() => setOpen(true))}
       />
