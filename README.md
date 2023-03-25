@@ -1,9 +1,3 @@
-{
-  "username": "samsam",
-  "email": "sam135@gmail.com",
-  "password": "Sang135@.com"
-}
-
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
