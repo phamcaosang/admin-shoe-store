@@ -159,3 +159,41 @@
 .selectStage .ant-select-selection-item {
   padding: 0 !important;
 }
+
+
+.footerDescription .ant-radio-group {
+  display: flex;
+  gap: 0px 20px;
+}
+
+.footerDescription .waiting .ant-radio-button-wrapper-checked {
+  background-color: #e6f7ff !important;
+  color: #096dd9 !important;
+  border-color: #91d5ff !important;
+  box-shadow: 0 0 0 3px #e6f7ff !important;
+}
+
+.footerDescription .received .ant-radio-button-wrapper-checked {
+  background-color: #fffbe6 !important;
+  color: #d48806 !important;
+  border-color: #ffe58f !important;
+  box-shadow: 0 0 0 3px #fffbe6 !important;
+
+
+}
+
+.footerDescription .sent .ant-radio-button-wrapper-checked {
+  background-color: #f6ffed !important;
+  color: #389e0d !important;
+  border-color: #b7eb8f !important;
+  box-shadow: 0 0 0 3px #f6ffed !important;
+
+}
+
+.footerDescription .cancel .ant-radio-button-wrapper-checked {
+  background-color: #fff1f0 !important;
+  color: #cf1322 !important;
+  border-color: #ffa39e !important;
+  box-shadow: 0 0 0 3px #fff1f0 !important;
+
+}

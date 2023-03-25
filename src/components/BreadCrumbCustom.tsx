@@ -31,7 +31,6 @@ const handleSuit = (item: string) => {
 export const BreadCrumbCustom = () => {
     const location = useLocation()
     const pathSnippets = location.pathname.split("/").filter(i => i && i.length < 30 && i !== "dashboard").map((item, index) => {
-        console.log(index, item)
         if (index === 2) {
             return {
                 value: item,

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useRef } from "react"
 import { Form, Input, Button, Select, Tooltip, Row, Col, Table, Modal, InputNumber, Divider } from "antd"
 import { TypeType } from "../../../utils/propsDummy/BrandProps";
 import SizeBoxes from "./CheckBoxesForSize";
@@ -17,6 +17,10 @@ import { Deletebtn } from "../../../components/buttons/Deletebtn";
 import { Dispatch, SetStateAction } from "react";
 import { toast } from "react-hot-toast";
 import { Viewbtn } from "../../../components/buttons/Viewbtn";
+import { Editor as TinyMCEEditor } from 'tinymce';
+import ModelEditor from "../../../components/editors/ModelEditor";
+
+
 interface AddColorComponentType {
     prodType: TypeType
 }
@@ -61,6 +65,7 @@ function initialFormValue() {
         name: "",
         modelId: "",
         storeId: "",
+        description: "",
         price: 0,
         values: [] as IPropList[]
     }
@@ -157,7 +162,8 @@ export const ProductFormEdit: React.FC = () => {
     const [sizes, setSizes] = useState<PropertyValue[]>([])
     const [dataProduct, setDataProduct] = useState<ProductModelForm>(initialFormValue());
     const [listProp, setListProp] = useState<IPropList[]>([])
-    console.log(sizes)
+    const editorRef = useRef<TinyMCEEditor | null>(null);
+
 
     function SizeInput(propertyValueId: String) {
 
@@ -188,7 +194,7 @@ export const ProductFormEdit: React.FC = () => {
         console.log("*********************")
         console.log({ ...dataProduct, values: listProp, storeId: dataProduct?.store?.id, modelId: dataProduct?.model?.id })
         updateProduct(
-            { ...dataProduct, values: listProp, storeId: dataProduct?.store?.id, modelId: dataProduct?.model?.id }
+            { ...dataProduct, values: listProp, storeId: dataProduct?.store?.id, modelId: dataProduct?.model?.id, description: editorRef.current?.getContent() }
         )
 
     }
@@ -211,6 +217,7 @@ export const ProductFormEdit: React.FC = () => {
             dataIndex: 'sizes',
             key: 'sizes',
             render: (value: ISizeProp[], record: IPropList) => {
+                console.log(value)
                 const handleChangeQuanity = (val: number, propertyValueId: string, propertyValue: string | undefined) => {
                     setListProp(prev => {
                         return prev.map(i => {
@@ -351,14 +358,12 @@ export const ProductFormEdit: React.FC = () => {
             setListProp(data.values)
         }
     }, [fetchProductSuccess])
-    console.log(listProp)
 
     useEffect(() => {
         if (updateSuccess) {
             navigate("/product")
         }
     }, [updateSuccess])
-    console.log(dataProduct)
 
 
     function AddColorProp(color: string) {
@@ -375,8 +380,6 @@ export const ProductFormEdit: React.FC = () => {
             })
         }
     }
-    console.log(listProp)
-
 
     return <>
         <FormLayoutV1
@@ -384,7 +387,7 @@ export const ProductFormEdit: React.FC = () => {
             styleWrapper={{ maxWidth: "100%", backgroundColor: "white", padding: "20px 0 20px 10px" }}
         >
             <Form
-                labelCol={{ span: 3 }}
+                labelCol={{ span: 2 }}
                 wrapperCol={{ span: 15 }}
                 layout="horizontal"
                 onFinish={handleFinish}
@@ -392,12 +395,15 @@ export const ProductFormEdit: React.FC = () => {
                 <InputField disabled label="Cửa hàng" name="storeId" required={true} value={dataProduct?.store?.name} setState={setDataProduct} />
                 <InputField disabled label="SKU" name="sku" required={true} value={dataProduct?.sku} setState={setDataProduct} />
                 <InputField label="Tên sản phẩm" name="name" required={true} value={dataProduct?.name} setState={setDataProduct} />
-                <InputField disabled label="Kiểu mẫu" name="model" required={true} value={dataProduct?.model?.name} setState={setDataProduct} />
                 <InputNumberField label="Giá" name="price" required={true} value={dataProduct?.price} setState={setDataProduct} configInputOptions={{ min: 0 }}
                     inputStyle={{
                         width: 200
                     }}
                 />
+                <InputField disabled label="Kiểu mẫu" name="model" required={true} value={dataProduct?.model?.name} setState={setDataProduct} />
+                <Form.Item label="Mô tả" colon={false} labelCol={{ span: 2 }} wrapperCol={{ span: 20 }}>
+                    <ModelEditor editorRef={editorRef} initialValue={dataProduct?.description} />
+                </Form.Item>
                 <Form.Item label="Màu" colon={false} >
                     {productType?.id &&
                         <AddColorComponent prodType={productType} />

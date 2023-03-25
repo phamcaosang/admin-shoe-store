@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useRef } from "react"
 import { Form, Input, Button, Select, Tooltip, Row, Col, Table, Modal, InputNumber, Divider } from "antd"
 import { dataType, TypeType } from "../../../utils/propsDummy/BrandProps";
 import SizeBoxes from "./CheckBoxesForSize";
@@ -19,6 +19,9 @@ import { Viewbtn } from "../../../components/buttons/Viewbtn";
 import { useGetStoresQuery } from "../../../redux/apiSlicers/Store";
 import { Dispatch, SetStateAction } from "react";
 import { notifyError } from "../../../utils/alert";
+import ModelEditor from "../../../components/editors/ModelEditor";
+import { Editor as TinyMCEEditor } from 'tinymce';
+
 interface AddColorComponentType {
     prodType: TypeType
 }
@@ -63,6 +66,7 @@ function initialFormValue() {
         name: "",
         modelId: "",
         storeId: "",
+        description: "",
         price: 0,
         values: [] as IPropList[]
     }
@@ -75,10 +79,12 @@ interface IModalPropertyQuantity {
     sizes: PropertyValue[],
     allSizes?: PropertyModelFull,
     setSizes: Dispatch<SetStateAction<PropertyValue[]>>,
-    SizeInput: (propertyValueId: string) => JSX.Element
+    SizeInput: (propertyValueId: string) => JSX.Element,
+    defaultDiscount: number,
+    defaultQuantity: number
 }
 
-function ModalPropertyQuantity({ propertyValueId, listProp, setListProp, sizes, allSizes, setSizes, SizeInput }: IModalPropertyQuantity) {
+function ModalPropertyQuantity({ propertyValueId, listProp, setListProp, sizes, allSizes, setSizes, SizeInput, defaultDiscount, defaultQuantity }: IModalPropertyQuantity) {
     const [isModalOpenLevel1, setIsModalOpenLevel1] = useState(false);
     let item = listProp.find(i => i.propertyValueId === propertyValueId);
 
@@ -93,8 +99,8 @@ function ModalPropertyQuantity({ propertyValueId, listProp, setListProp, sizes, 
                             console.log(i.sizes)
                             return {
                                 propertyValueId: id as string,
-                                quantity: i.sizes.find(i => i.propertyValueId === id)?.quantity || 0,
-                                price: 0
+                                quantity: i.sizes.find(i => i.propertyValueId === id)?.quantity || defaultQuantity,
+                                discountPrice: defaultDiscount
                             }
                         }) as ISizeProp[],
                     }
@@ -127,6 +133,7 @@ function ModalPropertyQuantity({ propertyValueId, listProp, setListProp, sizes, 
         </div>
         <Modal title="Chọn kích thước - size" open={isModalOpenLevel1}
             onOk={() => handleSubmit()}
+            cancelText="Hủy"
             onCancel={() => setIsModalOpenLevel1(false)}>
             {SizeInput(propertyValueId)}
         </Modal>
@@ -141,13 +148,16 @@ export const ProductFormNew: React.FC = () => {
     const [addProduct, { isLoading, isSuccess }] = useAddProductMutation()
     const [models, setModels] = useState<ModelModelFull[]>()
     const [productType, setProductType] = useState<TypeType | null>()
+    const [defaultQuantity, setDefaultQuantity] = useState(1)
+    const [defaultDiscount, setDefaultDiscount] = useState(0)
     const getSizes = useGetPropertysQuery().data?.find(i => i.name === "size" && i.productType.id === productType?.id) //find(i => i.values.length > 0)?.values//.values
     const Colors = useGetPropertysQuery().data?.find(i => i.name === "color" && i.productType.id === productType?.id)
-    console.log(Colors)
     const { data: Stores } = useGetStoresQuery()
     const [sizes, setSizes] = useState<PropertyValue[]>([])
     const [dataProduct, setDataProduct] = useState<ProductModelForm>(initialFormValue());
     const [listProp, setListProp] = useState<IPropList[]>([])
+    const editorRef = useRef<TinyMCEEditor | null>(null);
+
     function SizeInput(propertyValueId: String) {
         return <InputSizeField>
             {
@@ -173,8 +183,6 @@ export const ProductFormNew: React.FC = () => {
 
 
     const handleFinish = () => {
-        console.log("*********************")
-        console.log(listProp)
         if (dataProduct.modelId === "") {
             return notifyError("Phải chọn kiểu mẫu cho sản phẩm")
         }
@@ -192,10 +200,12 @@ export const ProductFormNew: React.FC = () => {
         }
         console.log({ ...dataProduct, values: listProp })
         addProduct(
-            { ...dataProduct, values: listProp }
+            { ...dataProduct, values: listProp, description: editorRef.current?.getContent() }
         )
 
     }
+
+
 
     const columns: ColumnsType<IPropList> = [
         {
@@ -209,8 +219,24 @@ export const ProductFormNew: React.FC = () => {
         },
         {
             title: <>
-                <p>Kích thước: Số lượng</p>
-                <p>Giá giảm: Giá cần giảm</p>
+                <div style={{ display: "flex", gap: 15, marginBottom: 5 }}>
+                    <span style={{ display: "inline-block", width: 200 }}>Kích thước: Số lượng</span>
+                    <InputNumber min={0}
+                        max={1000}
+                        value={defaultQuantity}
+                        onChange={val => setDefaultQuantity(val as number)}
+                    />
+                </div>
+                <div style={{ display: "flex", gap: 15 }}>
+                    <span style={{ display: "inline-block", width: 200 }}>Giá giảm: Giá cần giảm</span>
+                    <InputNumber min={0}
+                        style={{ width: 150 }}
+                        max={100000000}
+                        value={defaultDiscount}
+                        onChange={val => setDefaultDiscount(val as number)}
+                        formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                    />
+                </div>
             </>,
             dataIndex: 'sizes',
             key: 'sizes',
@@ -260,7 +286,7 @@ export const ProductFormNew: React.FC = () => {
                                     style={{ marginBottom: 7 }}
                                     label={getSizes?.values.find(i => i.id === item.propertyValueId)?.value}
                                 >
-                                    <InputNumber min={0} value={item.quantity} style={{ width: "100%" }}
+                                    <InputNumber min={0} defaultValue={defaultQuantity} style={{ width: "100%" }}
                                         onChange={val => handleChangeQuantity(val as number, item.propertyValueId)}
                                     />
 
@@ -268,7 +294,7 @@ export const ProductFormNew: React.FC = () => {
                                 <Form.Item label="Giá giảm" labelCol={{ span: 10 }} wrapperCol={{ span: 14 }}>
                                     <InputNumber min={0}
                                         max={100000000}
-                                        value={item.discountPrice ? item.discountPrice : 0}
+                                        defaultValue={defaultDiscount}
                                         style={{ width: "100%" }}
                                         onChange={val => handleChangePrice(val as number, item.propertyValueId)}
                                         formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
@@ -287,6 +313,8 @@ export const ProductFormNew: React.FC = () => {
                         allSizes={getSizes}
                         setSizes={setSizes}
                         SizeInput={SizeInput}
+                        defaultDiscount={defaultDiscount}
+                        defaultQuantity={defaultQuantity}
                     />
                 </>
             },
@@ -370,8 +398,8 @@ export const ProductFormNew: React.FC = () => {
             styleWrapper={{ maxWidth: "100%", backgroundColor: "white", padding: "20px 0 20px 10px" }}
         >
             <Form
-                labelCol={{ span: 3 }}
-                wrapperCol={{ span: 15 }}
+                labelCol={{ span: 2 }}
+                wrapperCol={{ span: 8 }}
                 layout="horizontal"
                 onFinish={handleFinish}
             >
@@ -389,6 +417,11 @@ export const ProductFormNew: React.FC = () => {
                 />
                 <InputField label="SKU" name="sku" required={true} value={dataProduct?.sku} setState={setDataProduct} />
                 <InputField label="Tên sản phẩm" name="name" required={true} value={dataProduct?.name} setState={setDataProduct} />
+                <InputNumberField label="Giá" name="price" required={true} value={dataProduct?.price} setState={setDataProduct} configInputOptions={{ min: 0 }}
+                    inputStyle={{
+                        width: 200
+                    }}
+                />
                 <SelectField label="Kiểu mẫu" name="modelId"
                     setState={setDataProduct}
                     defaultValue={"Chọn kiểu mẫu"}
@@ -398,11 +431,11 @@ export const ProductFormNew: React.FC = () => {
                             name: item.name
                         }
                     })} />
-                <InputNumberField label="Giá" name="price" required={true} value={dataProduct?.price} setState={setDataProduct} configInputOptions={{ min: 0 }}
-                    inputStyle={{
-                        width: 200
-                    }}
-                />
+
+                <Form.Item label="Mô tả" colon={false} labelCol={{ span: 2 }} wrapperCol={{ span: 20 }}>
+                    <ModelEditor editorRef={editorRef} initialValue={dataProduct?.description} />
+                </Form.Item>
+
 
 
                 <Form.Item label="Màu" colon={false} >
@@ -415,7 +448,8 @@ export const ProductFormNew: React.FC = () => {
                 </Form.Item >
 
                 <Table
-                    scroll={{ y: 'calc(100vh - 100px)' }}
+                    // scroll={{ y: 'calc(100vh - 100px)' }}
+                    pagination={{ pageSize: 5 }}
                     columns={columns}
                     dataSource={listProp}
                 />

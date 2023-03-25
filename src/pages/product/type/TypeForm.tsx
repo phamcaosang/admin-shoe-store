@@ -34,7 +34,6 @@ const TypeForm: React.FC<FormType> = ({ newForm }) => {
     const handleFinish = () => {
         newForm ? addType(dataType) : updateType(dataType)
     }
-    console.log(dataType)
 
     useEffect(() => {
         if (!newForm) {

@@ -6,7 +6,7 @@ import { BrandModelForm, BrandModelFull, useAddBrandMutation, useGetBrandByIdQue
 import { FormType } from "../../../router/Index";
 import { InputField, SelectField } from "../../../components/formInputs/CoreFormFields";
 import ModelEditor from "../../../components/editors/ModelEditor";
-import { ModelModelForm, ModelModelFull, useAddModelMutation, useGetModelByIdQuery, useUpdateModelMutation } from "../../../redux/apiSlicers/Model";
+import { ModelModelForm, useAddModelMutation, useGetModelByIdQuery, useUpdateModelMutation } from "../../../redux/apiSlicers/Model";
 import { TypeModelForm, TypeModelFull, useGetTypesQuery } from "../../../redux/apiSlicers/ProductType";
 import { Editor as TinyMCEEditor } from 'tinymce';
 import { notifyError } from "../../../utils/alert";

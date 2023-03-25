@@ -11,6 +11,7 @@ export interface TypeModelFull {
     name: string,
     description: string,
     image?: string,
+    selected?: number,
     createdAt?: Date,
     updatedAt?: Date
 }
@@ -70,6 +71,22 @@ const extendedApi = apiSlice.injectEndpoints({
                 return res
             },
         }),
+        updateSelected: builder.mutation<any, String[]>({
+            query: (item: String[]) => ({
+                url: `${TypeAPI}/update/selected`,
+                method: 'PUT',
+                body: item,
+            }),
+            invalidatesTags: (result, error, arg) => [{ type: `${TypeName}`, id: 'LIST' }],
+            transformErrorResponse: (err: any) => {
+                console.log(err)
+                notifyError(err.data.message)
+            },
+            transformResponse: (res: any) => {
+                notifySuccess(`${TypeTrans} cập nhập thành công`)
+                return res
+            },
+        }),
         deleteType: builder.mutation({
             query: (id: string) => ({
                 url: `${TypeAPI}/delete/${id}`,
@@ -90,4 +107,4 @@ const extendedApi = apiSlice.injectEndpoints({
     overrideExisting: false,
 })
 
-export const { useGetTypesQuery, useGetTypeByIdQuery, useAddTypeMutation, useUpdateTypeMutation, useDeleteTypeMutation } = extendedApi;
+export const { useGetTypesQuery, useGetTypeByIdQuery, useAddTypeMutation, useUpdateTypeMutation, useDeleteTypeMutation, useUpdateSelectedMutation } = extendedApi;

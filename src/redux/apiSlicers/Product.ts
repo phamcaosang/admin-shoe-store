@@ -26,6 +26,7 @@ export interface ProductModelFull {
     sku: string,
     name: string,
     modelId: string,
+    description: string,
     model?: {
         id: string,
         name: string,
@@ -49,6 +50,7 @@ export interface ProductModelForm {
     sku: string,
     name: string,
     modelId: string,
+    description: string,
     model?: {
         id: string,
         name: string,

@@ -3,7 +3,7 @@ import { BarViewProduct } from "./BarViewProduct";
 import { PieProduct } from "./PieProduct";
 import { ProductStatistic } from "./ProductStatistic";
 import { TopWishProduct } from "./TopWishProduct";
-import { UserStatistic } from "./UserStatistic";
+import { OrderStatistic } from "./OrderStatistic";
 
 export const Dashboard = () => {
 
@@ -53,9 +53,9 @@ export const Dashboard = () => {
             textAlign: "center",
             paddingTop: 15
           }}>
-            Thông số người dùng
+            Thông số đơn hàng
           </div>
-          <UserStatistic />
+          <OrderStatistic />
         </div>
       </Col>
       <Col className="gutter-row" span={24} lg={{ span: 14 }} >

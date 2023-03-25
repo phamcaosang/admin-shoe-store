@@ -41,6 +41,6 @@ export const TopWishProduct = () => {
         },
     ];
     return <>
-        <Table dataSource={products} columns={columns} pagination={{ pageSize: 4 }} />
+        <Table dataSource={products} columns={columns} pagination={{ pageSize: 3 }} />
     </>
 }
