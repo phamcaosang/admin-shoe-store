@@ -1,7 +1,7 @@
 import { Button, Form, Input, Tooltip, Upload } from "antd"
 import { ReactNode, useState, useEffect } from "react"
-import { PopupSelectionModal, PopupSelectionModalSpecProp } from "../modals/PopupSelectionModals"
-import { MinusCircleOutlined, PlusCircleOutlined } from '@ant-design/icons';
+import { PopupSelectionModalSpecProp } from "../modals/PopupSelectionModals"
+import { PlusCircleOutlined } from '@ant-design/icons';
 import { TypeType } from "../../utils/propsDummy/BrandProps";
 import { PopupAddSpecPropModal } from "../modals/PopupAddModal";
 import { UploadChangeParam } from "antd/lib/upload";
@@ -9,8 +9,6 @@ import { UploadFile, UploadProps } from "antd/es/upload";
 import { PlusOutlined } from '@ant-design/icons';
 import UploadWidget from "../../utils/uploadWidget";
 import { notifyError } from "../../utils/alert";
-import { useAddPropertyMutation } from "../../redux/apiSlicers/Property";
-
 
 
 interface InputSizeFieldType {
@@ -174,7 +172,7 @@ export const ImageUploaderInput: React.FC<ImageUploader> = ({ label, name = "ima
                 url: imageValue
             }])
         }
-    }, [value])
+    }, [value, multipleAllow])
 
     function handleOnUpload(error: any, result: any, widget: any) {
 
