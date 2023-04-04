@@ -8,18 +8,21 @@ import { PropertyValue } from '../../../redux/apiSlicers/Property';
 
 interface ISizeProps {
   sizes: PropertyValue[],
+  selectedSizes?: PropertyValue[],
   setSizes: Dispatch<SetStateAction<PropertyValue[]>>,
   defaultValue?: ISizeProp[],
   children: React.ReactNode,
   editForm: boolean
 }
 
-const SizeBoxes: React.FC<ISizeProps> = ({ sizes, setSizes, defaultValue, children, editForm }: ISizeProps) => {
+const SizeBoxes: React.FC<ISizeProps> = ({ sizes, selectedSizes, setSizes, defaultValue, children, editForm }: ISizeProps) => {
   const [checkList, setCheckList] = useState<CheckboxValueType[]>([]);
   useEffect(() => {
-    setCheckList(sizes.map(i => i.value))
-  }, [sizes.length])
-
+    // setCheckList(sizes.map(i => i.value))
+    if (selectedSizes?.length === 0) {
+      setCheckList([])
+    }
+  }, [selectedSizes?.length])
 
   useEffect(() => {
     defaultValue && setCheckList(defaultValue?.map(i => {
@@ -30,11 +33,14 @@ const SizeBoxes: React.FC<ISizeProps> = ({ sizes, setSizes, defaultValue, childr
       }
     }))
   }, [])
+  // console.log(checkList)
 
   const onChange = (checkedValues: CheckboxValueType[]) => {
     const result = checkedValues.map(item => {
       return sizes.find(i => i.value === item.toString()) as PropertyValue
     })
+    console.log(result.map(i => i.value))
+    console.log(sizes)
     setCheckList(result.map(i => i.value))
     setSizes(editForm ? result.map(i => {
       const found = defaultValue?.find(item => item.propertyValue === i.value)

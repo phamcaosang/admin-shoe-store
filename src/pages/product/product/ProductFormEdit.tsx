@@ -170,7 +170,7 @@ export const ProductFormEdit: React.FC = () => {
         return <InputSizeField>
             {
                 getSizes ?
-                    <SizeBoxes sizes={getSizes.values} setSizes={setSizes}
+                    <SizeBoxes sizes={getSizes.values} selectedSizes={sizes} setSizes={setSizes}
                         editForm={true}
                         defaultValue={
                             listProp.find(i => i.propertyValueId === propertyValueId)?.sizes
@@ -348,7 +348,7 @@ export const ProductFormEdit: React.FC = () => {
         if (producTypeID) {
             const resultProductType = ProductTypeQuery.data?.find((item: TypeModelFull) => item.id === producTypeID)
             resultProductType ? setProductType(resultProductType) : navigate("/product")
-            getSizes && setSizes(getSizes.values)
+            // getSizes && setSizes(getSizes.values)
         }
     }, [productType, getSizes])
 
