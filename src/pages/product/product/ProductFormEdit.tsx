@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react"
 import { Form, Input, Button, Select, Tooltip, Row, Col, Table, Modal, InputNumber, Divider } from "antd"
+import { TfiReload } from "react-icons/tfi"
 import { TypeType } from "../../../utils/propsDummy/BrandProps";
 import SizeBoxes from "./CheckBoxesForSize";
 import { useQuery } from "../../../utils/queryParams";
@@ -158,7 +159,14 @@ export const ProductFormEdit: React.FC = () => {
 
     const [productType, setProductType] = useState<TypeType | null>()
     const getSizes = useGetPropertysQuery().data?.find(i => i.name === "size" && i.productType.id === productType?.id) //find(i => i.values.length > 0)?.values//.values
-    const Colors = useGetPropertysQuery().data?.find(i => i.name === "color" && i.productType.id === productType?.id)
+    const { data: Colors, refetch: refetchGetColor } = useGetPropertysQuery(undefined, {
+        selectFromResult: ({ data }) => {
+            return {
+                data: data?.find(i => i.name === "color" && i.productType.id === productType?.id)
+            }
+        },
+        skip: !productType
+    })
     const [sizes, setSizes] = useState<PropertyValue[]>([])
     const [dataProduct, setDataProduct] = useState<ProductModelForm>(initialFormValue());
     const [listProp, setListProp] = useState<IPropList[]>([])
@@ -404,7 +412,10 @@ export const ProductFormEdit: React.FC = () => {
                 <Form.Item label="Mô tả" colon={false} labelCol={{ span: 2 }} wrapperCol={{ span: 20 }}>
                     <ModelEditor editorRef={editorRef} initialValue={dataProduct?.description} />
                 </Form.Item>
-                <Form.Item label="Màu" colon={false} >
+                <Form.Item label={
+                    <div style={{ display: "flex", flexDirection: "column" }}><div>Màu</div><div style={{ cursor: "pointer" }}>
+                        <Tooltip title={"Chạy lại"} placement="bottom"><TfiReload onClick={() => refetchGetColor()} /></Tooltip></div></div>
+                } colon={false} >
                     {productType?.id &&
                         <AddColorComponent prodType={productType} />
                     }

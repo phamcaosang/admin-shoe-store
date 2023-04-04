@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react"
 import { Form, Input, Button, Select, Tooltip, Row, Col, Table, Modal, InputNumber, Divider } from "antd"
+import { TfiReload } from "react-icons/tfi"
 import { dataType, TypeType } from "../../../utils/propsDummy/BrandProps";
 import SizeBoxes from "./CheckBoxesForSize";
 import { useQuery } from "../../../utils/queryParams";
@@ -150,8 +151,22 @@ export const ProductFormNew: React.FC = () => {
     const [productType, setProductType] = useState<TypeType | null>()
     const [defaultQuantity, setDefaultQuantity] = useState(1)
     const [defaultDiscount, setDefaultDiscount] = useState(0)
-    const getSizes = useGetPropertysQuery().data?.find(i => i.name === "size" && i.productType.id === productType?.id) //find(i => i.values.length > 0)?.values//.values
-    const Colors = useGetPropertysQuery().data?.find(i => i.name === "color" && i.productType.id === productType?.id)
+    const { data: getSizes, refetch: refetchGetSize } = useGetPropertysQuery(undefined, {
+        selectFromResult: ({ data }) => {
+            return {
+                data: data?.find(i => i.name === "size" && i.productType.id === productType?.id)
+            }
+        },
+        skip: !productType
+    })
+    const { data: Colors, refetch: refetchGetColor } = useGetPropertysQuery(undefined, {
+        selectFromResult: ({ data }) => {
+            return {
+                data: data?.find(i => i.name === "color" && i.productType.id === productType?.id)
+            }
+        },
+        skip: !productType
+    })
     const { data: Stores } = useGetStoresQuery()
     const [sizes, setSizes] = useState<PropertyValue[]>([])
     const [dataProduct, setDataProduct] = useState<ProductModelForm>(initialFormValue());
@@ -360,7 +375,7 @@ export const ProductFormNew: React.FC = () => {
             setModels(resutModels)
             resultProductType ? setProductType(resultProductType) : navigate("/product")
         }
-    }, [productType, getSizes])
+    }, [productType, getSizes, navigate, query, ModelQuery.data?.length])
 
     useEffect(() => {
         if (isSuccess) {
@@ -422,7 +437,11 @@ export const ProductFormNew: React.FC = () => {
                         width: 200
                     }}
                 />
-                <SelectField label="Kiểu mẫu" name="modelId"
+                <SelectField label={
+                    <div style={{ display: "flex", flexDirection: "column" }}><div>Kiểu mẫu</div><div style={{ cursor: "pointer" }}>
+                        <Tooltip title={"Chạy lại"} placement="bottom"><TfiReload onClick={() => ModelQuery.refetch()} /></Tooltip></div></div>
+                }
+                    name="modelId"
                     setState={setDataProduct}
                     defaultValue={"Chọn kiểu mẫu"}
                     options={models?.map(item => {
@@ -438,7 +457,10 @@ export const ProductFormNew: React.FC = () => {
 
 
 
-                <Form.Item label="Màu" colon={false} >
+                <Form.Item label={
+                    <div style={{ display: "flex", flexDirection: "column" }}><div>Màu</div><div style={{ cursor: "pointer" }}>
+                        <Tooltip title={"Chạy lại"} placement="bottom"><TfiReload onClick={() => refetchGetColor()} /></Tooltip></div></div>
+                } colon={false} >
                     {productType?.id &&
                         <AddColorComponent prodType={productType} />
                     }
