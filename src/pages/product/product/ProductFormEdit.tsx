@@ -413,9 +413,10 @@ export const ProductFormEdit: React.FC = () => {
                     </Select>
                 </Form.Item >
                 <Table
-                    scroll={{ y: 'calc(100vh - 100px)' }}
+                    // scroll={{ y: 'calc(100vh - 100px)' }}
                     columns={columns}
                     dataSource={listProp}
+                    pagination={false}
                 />
                 <SubmitBtn text="Lưu Thay Đổi" loading={isLoading} buttonStyle={{
                     marginTop: 30

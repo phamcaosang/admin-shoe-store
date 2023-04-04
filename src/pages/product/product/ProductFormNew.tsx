@@ -449,7 +449,7 @@ export const ProductFormNew: React.FC = () => {
 
                 <Table
                     // scroll={{ y: 'calc(100vh - 100px)' }}
-                    pagination={{ pageSize: 5 }}
+                    pagination={false}
                     columns={columns}
                     dataSource={listProp}
                 />
