@@ -31,7 +31,7 @@ interface option {
     name: string
 }
 interface SelectFieldType {
-    label: string,
+    label: string | React.ReactNode,
     name: string,
     setState: React.Dispatch<React.SetStateAction<any>>,
     required?: boolean,

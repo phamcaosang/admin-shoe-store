@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Button, Modal, Tag, Tooltip } from 'antd'
+import { Button, Modal, Tag, Tooltip, Spin } from 'antd'
 import { dataType } from '../../utils/propsDummy/BrandProps';
 import { Link } from 'react-router-dom';
 import { dataSpecProperty } from '../../utils/propsDummy/PropertyProps';
@@ -16,29 +16,37 @@ interface PopupSelectionModalType {
 
 //use for productype selection
 export const PopupSelectionModal = ({ title, open, onCancel }: PopupSelectionModalType) => {
-    const { data } = useGetTypesQuery()
+    const { data, refetch, isLoading, isFetching } = useGetTypesQuery()
     return (
         <div>
             <Modal
                 title={title}
                 open={open}
-                onOk={onCancel}
-                onCancel={onCancel}
-                cancelText="Cancel"
+                closable={false}
+                footer={
+                    <>
+                        <Button onClick={onCancel}>Hủy</Button>
+                        <Button type='primary' onClick={() => refetch()}>Load lại</Button>
+                    </>
+                }
                 width={500}
             >
-                <div style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    width: '100%',
-                    flexWrap: 'wrap'
-                }}>
-                    {data?.map((item: TypeModelFull) => <Link style={{ margin: 5 }} to={`/product/create?type=${item.id}`}>
-                        <Button key={item.id} style={{ padding: 20 }}>{item.name}</Button>
-                    </Link>)}
-                </div>
+                <Spin spinning={isLoading || isFetching}>
+
+                    <div style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        width: '100%',
+                        flexWrap: 'wrap'
+                    }}>
+                        {data?.map((item: TypeModelFull) => <Link style={{ margin: 5 }} to={`/product/create?type=${item.id}`}>
+                            <Button key={item.id} style={{ padding: 20 }}>{item.name}</Button>
+                        </Link>)}
+                    </div>
+                </Spin>
+
             </Modal>
-        </div>
+        </div >
     )
 }
 

@@ -197,3 +197,7 @@
   box-shadow: 0 0 0 3px #fff1f0 !important;
 
 }
+
+.ant-form-item-label {
+  overflow: visible !important;
+}

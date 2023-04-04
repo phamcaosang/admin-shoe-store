@@ -16,9 +16,9 @@ interface ISizeProps {
 }
 
 const SizeBoxes: React.FC<ISizeProps> = ({ sizes, selectedSizes, setSizes, defaultValue, children, editForm }: ISizeProps) => {
+  console.log(defaultValue)
   const [checkList, setCheckList] = useState<CheckboxValueType[]>([]);
   useEffect(() => {
-    // setCheckList(sizes.map(i => i.value))
     if (selectedSizes?.length === 0) {
       setCheckList([])
     }
@@ -33,14 +33,11 @@ const SizeBoxes: React.FC<ISizeProps> = ({ sizes, selectedSizes, setSizes, defau
       }
     }))
   }, [])
-  // console.log(checkList)
 
   const onChange = (checkedValues: CheckboxValueType[]) => {
     const result = checkedValues.map(item => {
       return sizes.find(i => i.value === item.toString()) as PropertyValue
     })
-    console.log(result.map(i => i.value))
-    console.log(sizes)
     setCheckList(result.map(i => i.value))
     setSizes(editForm ? result.map(i => {
       const found = defaultValue?.find(item => item.propertyValue === i.value)
@@ -64,7 +61,7 @@ const SizeBoxes: React.FC<ISizeProps> = ({ sizes, selectedSizes, setSizes, defau
         return {
           label: i.value,
           value: i.value,
-          disabled: editForm ? defaultValue?.find(item => item.propertyValue === i.value && !item.isNew) ? true : false : false
+          disabled: editForm ? (defaultValue?.find(item => item.propertyValue === i.value && !item.isNew) ? true : false) : false
         }
       })}
       value={checkList}
