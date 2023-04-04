@@ -134,7 +134,7 @@ function ModalPropertyQuantity({ propertyValueId, listProp, setListProp, sizes, 
         <Modal title="Chọn kích thước - size" open={isModalOpenLevel1}
             onOk={() => handleSubmit()}
             cancelText="Hủy"
-            onCancel={() => setIsModalOpenLevel1(false)}>
+            onCancel={() => { setIsModalOpenLevel1(false); setSizes([]) }}>
             {SizeInput(propertyValueId)}
         </Modal>
     </>
@@ -157,12 +157,13 @@ export const ProductFormNew: React.FC = () => {
     const [dataProduct, setDataProduct] = useState<ProductModelForm>(initialFormValue());
     const [listProp, setListProp] = useState<IPropList[]>([])
     const editorRef = useRef<TinyMCEEditor | null>(null);
+    console.log(sizes)
 
     function SizeInput(propertyValueId: String) {
         return <InputSizeField>
             {
                 getSizes ?
-                    <SizeBoxes sizes={getSizes.values} setSizes={setSizes}
+                    <SizeBoxes sizes={getSizes.values} selectedSizes={sizes} setSizes={setSizes}
                         editForm={false}
                         defaultValue={
                             listProp.find(i => i.propertyValueId === propertyValueId)?.sizes
@@ -358,7 +359,6 @@ export const ProductFormNew: React.FC = () => {
             const resutModels = ModelQuery.data?.filter((item: ModelModelFull) => item.productType.id === producTypeID)
             setModels(resutModels)
             resultProductType ? setProductType(resultProductType) : navigate("/product")
-            getSizes && setSizes(getSizes.values)
         }
     }, [productType, getSizes])
 

@@ -348,7 +348,7 @@ export const ProductFormEdit: React.FC = () => {
         if (producTypeID) {
             const resultProductType = ProductTypeQuery.data?.find((item: TypeModelFull) => item.id === producTypeID)
             resultProductType ? setProductType(resultProductType) : navigate("/product")
-            getSizes && setSizes(getSizes.values)
+            // getSizes && setSizes(getSizes.values)
         }
     }, [productType, getSizes])
 
