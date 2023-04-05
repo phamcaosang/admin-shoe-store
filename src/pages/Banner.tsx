@@ -80,7 +80,7 @@ export const Banner: React.FC = () => {
 
     const columnTable: ColumnsType<BannerModelFull> = [
         {
-            title: 'Ảnh kích thước máy tính - 1270x440',
+            title: 'Ảnh kích thước máy tính - Tất cả hình nên theo 1 tỉ lệ 3:1 hoặc 5:2',
             dataIndex: 'imageDesktop',
             width: '60%',
             render: (value: string) => {
@@ -95,7 +95,7 @@ export const Banner: React.FC = () => {
             }
         },
         {
-            title: 'Ảnh kích thước điện thoại - 440x440',
+            title: 'Ảnh kích thước điện thoại - Tỉ lệ 1:1',
             dataIndex: 'imageMobile',
             width: '25%',
             render: (value: string) => {
