@@ -95,26 +95,28 @@ export const TextAreaField: React.FC<TextAreaFieldType> = ({ label, name, value,
 export const SelectField: React.FC<SelectFieldType> = ({ label, name, options, defaultValue, formItemStyle, selectStyle, optionStyle, setState, required, children, propertyId }) => {
     return defaultValue ? <Form.Item label={label} name={name} style={formItemStyle} colon={false}>
         {children}
-        <Select style={selectStyle} placeholder={`Select ${label}`} defaultValue={defaultValue} onChange={(value: any, option: any) => {
-            console.log(value, option)
-            setState && setState((prev: any) => {
-                if (name === "color") {
-                    return {
-                        ...prev,
-                        "color": {
-                            "propertyId": propertyId,
-                            "propertyValueId": value
+        <Select
+            showSearch
+            optionFilterProp="children"
+            style={selectStyle} placeholder={`Select ${label}`} defaultValue={defaultValue} onChange={(value: any, option: any) => {
+                setState && setState((prev: any) => {
+                    if (name === "color") {
+                        return {
+                            ...prev,
+                            "color": {
+                                "propertyId": propertyId,
+                                "propertyValueId": value
+                            }
                         }
                     }
-                }
 
-                return {
-                    ...prev,
-                    [name]: value
-                }
-            })
+                    return {
+                        ...prev,
+                        [name]: value
+                    }
+                })
 
-        }}>
+            }}>
             {options?.map(item => <Select.Option value={item.id} key={item.id} style={optionStyle}>{item.name}</Select.Option>)}
         </Select>
     </Form.Item > : <></>

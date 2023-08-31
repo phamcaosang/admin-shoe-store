@@ -464,7 +464,10 @@ export const ProductFormNew: React.FC = () => {
                     {productType?.id &&
                         <AddColorComponent prodType={productType} />
                     }
-                    <Select defaultValue={"Chọn màu"} onChange={(val: string) => AddColorProp(val)}>
+                    <Select
+                        showSearch
+                        optionFilterProp="children"
+                        defaultValue={"Chọn màu"} onChange={(val: string) => AddColorProp(val)}>
                         {Colors?.values?.map((item: any) => <Select.Option value={item.id} key={item.id}>{item.value}</Select.Option>)}
                     </Select>
                 </Form.Item >
